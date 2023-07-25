@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voucher Narration Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input[type="text"], select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .narration {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Voucher Narration Generator</h1>
+    <label for="voucherType">Select Voucher Type:</label>
+    <select id="voucherType">
+      <option value="payment">Payment</option>
+      <option value="receipt">Receipt</option>
+      <option value="expense">Expense</option>
+    </select>
+    <label for="voucherAmount">Enter Voucher Amount:</label>
+    <input type="text" id="voucherAmount" placeholder="Enter the amount">
+    <button onclick="generateNarration()">Generate Narration</button>
+    <div class="narration" id="narrationOutput"></div>
+  </div>
+
+  <script>
+    // Function to generate narration using Chat GPT API
+    async function generateNarration() {
+      const voucherType = document.getElementById("voucherType").value;
+      const voucherAmount = document.getElementById("voucherAmount").value;
+
+      // Call Chat GPT API to generate narration
+      const narration = await fetchNarrationFromApi(voucherType, voucherAmount);
+
+      // Display the generated narration
+      const narrationOutput = document.getElementById("narrationOutput");
+      narrationOutput.textContent = narration;
+    }
+
+    // Function to fetch narration from the Chat GPT API
+    async function fetchNarrationFromApi(voucherType, voucherAmount) {
+      // Replace 'YOUR_API_KEY' with your actual Chat GPT API key
+      const apiKey = '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';
+      const apiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
+
+      const prompt = `You have made a ${voucherType} of ${voucherAmount} dollars. The narration for this voucher is:`;
+      const data = {
+        prompt: prompt,
+        max_tokens: 100,
+      };
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      return result.choices[0].text.trim();
+    }
+  </script>
+</body>
+</html>
